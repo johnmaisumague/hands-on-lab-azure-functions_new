@@ -87,7 +87,7 @@ resource "azapi_resource" "func_drbl" {
           },
           {
             name  = "CHAT_MODEL_DEPLOYMENT_NAME",
-            value = azurerm_cognitive_deployment.gpt_5_mini.name
+            value = "gpt-5-mini"
           }
         ]
       }

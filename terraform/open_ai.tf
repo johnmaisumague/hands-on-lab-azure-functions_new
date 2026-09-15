@@ -12,6 +12,7 @@ resource "azurerm_cognitive_account" "open_ai" {
   }
 }
 
+/*
 resource "azurerm_cognitive_deployment" "gpt_5_mini" {
   name                 = "gpt-5-mini"
   cognitive_account_id = azurerm_cognitive_account.open_ai.id
@@ -26,3 +27,4 @@ resource "azurerm_cognitive_deployment" "gpt_5_mini" {
     capacity = 10
   }
 }
+*/

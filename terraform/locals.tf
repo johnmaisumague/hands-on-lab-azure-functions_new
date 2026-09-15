@@ -19,11 +19,7 @@ locals {
     var.tags,
     tomap(
       {
-        "Deployment"  = "terraform",
         "Environment" = var.environment,
-        "Location"    = var.location,
-        "ProjectName" = "hands-on-lab-azure-functions",
-        "Application" = var.application,
         "CostControl"     = "Ignore",
         "SecurityControl" = "Ignore"
       }

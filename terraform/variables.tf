@@ -17,9 +17,9 @@ variable "application" {
 variable "location" {
   description = "Azure deployment location"
   type        = string
-  default     = "swedencentral"
+  default     = "westeurope"
   validation {
-    condition     = can(regex("(eastus|eastus2|southcentralus|swedencentral|westus3)", var.location))
+    condition     = can(regex("(eastus|eastus2|southcentralus|westeurope|westus3)", var.location))
     error_message = "The location value must be a valid Azure region."
   }
 }
