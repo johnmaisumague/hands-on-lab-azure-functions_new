@@ -3,49 +3,48 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace FuncStd
+namespace funcstd;
+
+public class AudioUpload
 {
-    public class AudioUploadOutput
-    {
-        [BlobOutput("%STORAGE_ACCOUNT_CONTAINER%/{rand-guid}.wav", Connection = "AudioUploadStorage")]
-        public byte[] Blob { get; set; }
+    private readonly ILogger<AudioUpload> _logger;
 
-        public required IActionResult HttpResponse { get; set; }
+    public AudioUpload(ILogger<AudioUpload> logger)
+    {
+        _logger = logger;
     }
 
-    public class AudioUpload
+    [Function(nameof(AudioUpload))]
+    public AudioUploadOutput Run(
+    [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req
+)
     {
-        private readonly ILogger _logger;
+        _logger.LogInformation("Processing a new audio file upload request");
 
-        public AudioUpload(ILoggerFactory loggerFactory)
+        // Get the first file in the form
+        byte[]? audioFileData = null;
+        var file = req.Form.Files[0];
+
+        using (var memstream = new MemoryStream())
         {
-            _logger = loggerFactory.CreateLogger<AudioUpload>();
+            file.OpenReadStream().CopyTo(memstream);
+            audioFileData = memstream.ToArray();
         }
 
-        [Function(nameof(AudioUpload))]
-        public AudioUploadOutput Run(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req
-        )
+        // Store the file as a blob and return a success response
+        return new AudioUploadOutput()
         {
-            _logger.LogInformation("Processing a new audio file upload request");
-
-            // Get the first file in the form
-            byte[]? audioFileData = null;
-            var file = req.Form.Files[0];
-
-            using (var memstream = new MemoryStream())
-            {
-                file.OpenReadStream().CopyTo(memstream);
-                audioFileData = memstream.ToArray();
-            }
-
-            // Store the file as a blob and return a success response
-            return new AudioUploadOutput()
-            {
-                Blob = audioFileData,
-                HttpResponse = new OkObjectResult("Uploaded!")
-            };
-        }
-
+            Blob = audioFileData,
+            HttpResponse = new OkObjectResult("Uploaded!")
+        };
     }
+}
+
+public class AudioUploadOutput
+{
+    [BlobOutput("%STORAGE_ACCOUNT_CONTAINER%/{rand-guid}.wav", Connection = "AudioUploadStorage")]
+    public byte[] Blob { get; set; }
+
+    [HttpResult]
+    public required IActionResult HttpResponse { get; set; }
 }
